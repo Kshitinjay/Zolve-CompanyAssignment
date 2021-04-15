@@ -1,15 +1,14 @@
+// import HighchartsReact from "highcharts-react-official";
+
 import React, { useState, useEffect } from "react";
 import "./index.css";
+const Highcharts = require("highcharts");
 const Home = () => {
   const [Fromdate, setFromdate] = useState("");
   const [Todate, setTodate] = useState("");
   const [Pagesize, setPagesize] = useState("");
   const [Page, setPage] = useState("");
-  const [data, setData] = useState([]);
 
-  const [xAxis, setXaxis] = useState([]);
-  const [yAxis, setYaxis] = useState([]);
-  
   const handleFromdate = (e) => {
     setFromdate(e.target.value);
   };
@@ -31,24 +30,66 @@ const Home = () => {
       `https://api.stackexchange.com/2.2/tags?page=${Page}&pagesize=${Pagesize}&fromdate=${Fromdate}&todate=${Todate}&order=desc&sort=popular&site=stackoverflow`
     )
       .then((res) => res.json())
-      .then((result) => setData(result))
-      .then(()=>{
-        setXaxis([]);
-      })
-      .then(()=>{
-        setYaxis([]);
-      })
+      .then((result) => showData(result))
       .catch((error) => console.log(error.message));
-      
   }, [Page, Pagesize, Fromdate, Todate]);
 
-  if(data.items !== undefined){
-    data.items.map((item)=>{
-        xAxis.push(item.name)
-        yAxis.push(item.count)
-    })
-}        
-console.log(xAxis," ",yAxis)
+  const showData = (dt) => {
+    console.log(dt);
+    const data = dt.items.reduce((acc, current) => {
+      acc = {
+        ...acc,
+        [current.name]: current.count,
+      };
+      return acc;
+    }, {});
+    
+    console.log(data);
+    let chartData = {};
+    chartData["divId"] = "showdata";
+    chartData["xLabel"] = "Language";
+    chartData["yLabel"] = "Count";
+    chartData["xValues"] = Object.keys(data);
+    chartData["yValues"] = Object.values(data);
+    drawChart(chartData);
+  };
+
+  const drawChart = (chartData) => {
+    Highcharts.chart(chartData.divId, {
+      chart: {
+        type: "column",
+      },
+      credits: {
+        enabled: false,
+      },
+      title: {
+        text: "mydata",
+      },
+      xAxis: {
+        categories: chartData.xValues,
+        title: {
+          text: chartData.xLabel,
+        },
+      },
+      yAxis: {
+        categories: chartData.yValues,
+        title: {
+          text: chartData.yLabel,
+        },
+      },
+      series: [
+        {
+          name: "",
+          data: chartData.yValues,
+        },
+      ],
+      plotOptions: {
+        series: {
+          pointWidth: 10,
+        },
+      },
+    });
+  };
 
   return (
     <div className="mainContainer">
@@ -82,6 +123,7 @@ console.log(xAxis," ",yAxis)
           onChange={handlePage}
         />
       </div>
+      <div id="showdata"></div>
     </div>
   );
 };

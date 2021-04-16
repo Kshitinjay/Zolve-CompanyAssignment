@@ -7,20 +7,13 @@ const Clipboard = () => {
   const handleChange = (event) => {
     setInputValue(event.target.value);
   };
-  const copied = () => {
-    setFlag(true);
-    setTimeout(() => {
-      setFlag(false);
-    }, 2000);
-  };
   return (
     <div>
       <h1>Clipboard</h1>
       <input type="text" onChange={handleChange} value={inputValue} />
-      <CopyToClipboard text={inputValue} onCopy={copied}>
+      <CopyToClipboard text={inputValue}>
         <div>
           <button>Copy</button>
-          {flag ? <p>Copied!</p> : null}
         </div>
       </CopyToClipboard>
     </div>

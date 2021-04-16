@@ -42,7 +42,7 @@ const Home = () => {
         [current.name]: current.count,
       };
       return acc;
-    }, {});
+    });
     
     console.log(data);
     let chartData = {};
@@ -83,11 +83,6 @@ const Home = () => {
           data: chartData.yValues,
         },
       ],
-      plotOptions: {
-        series: {
-          pointWidth: 10,
-        },
-      },
     });
   };
 
